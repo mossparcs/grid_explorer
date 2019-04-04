@@ -12,6 +12,7 @@ import lejos.hardware.port.SensorPort;
 import lejos.robotics.Color;
 import lejos.hardware.sensor.EV3IRSensor;
 import lejos.utility.Delay;
+import lejos.hardware.Sound;
 import java.lang.String;
 
 public class grid_explorer {
@@ -47,6 +48,7 @@ public class grid_explorer {
 //				map[i][j] = 0;
 //			}
 //		}
+		
 		//if 1 -> visited, if 2-> red & visited, if 3->block
 		
 		
@@ -96,8 +98,9 @@ public class grid_explorer {
 //		}catch(InterruptedException e){}
 //	}
 	
-	public static void one_forward(RegulatedMotor leftMotor, RegulatedMotor rightMotor, EV3ColorSensor leftColor, EV3ColorSensor rightColor, EV3IRSensor IRsensor){
-
+	public static void one_forward(RegulatedMotor leftMotor, RegulatedMotor rightMotor, 
+			EV3ColorSensor leftColor, EV3ColorSensor rightColor, EV3IRSensor IRsensor){
+ 
 		EV3 ev3 = (EV3) BrickFinder.getLocal();
 		TextLCD lcd = ev3.getTextLCD();
 		Keys keys = ev3.getKeys();
@@ -106,11 +109,16 @@ public class grid_explorer {
 		int right_met = 0;
 		int left_met = 0;
 	
+		if(block_check(ir_sensor) < 20){
+			Sound.beep();
+			return;	
+		}
 		//first, it just moves until the do/while condition is met
 		rightMotor.setSpeed(400);
 		leftMotor.setSpeed(400);
 		rightMotor.forward();
 		leftMotor.forward();
+
 		
 		//do while loop checks if black line is detected, every 10 ms.
 		do{
@@ -164,7 +172,7 @@ public class grid_explorer {
 				}
 			}
 			
-			//draws the result string, but it did not work when I tried last time. will have to try again - KL
+			//draws the result string, but it did not work when I tried last time. will have to try again
 			lcd.drawString(str,1,5);
 			
 			Delay.msDelay(10);
@@ -230,5 +238,16 @@ public class grid_explorer {
 			}
 		}
 		return 1;
+	}
+	
+	public static float block_check(EV3IRSensor IRsensor){
+
+		SampleProvider distanceMode = IRsensor.getDistanceMode();
+		float value[] = new float[distanceMode.sampleSize()];
+		
+		distanceMode.fetchSample(value, 0);
+		float centimeter = value[0];
+		
+		return centimeter;
 	}
 }
