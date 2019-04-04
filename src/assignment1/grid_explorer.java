@@ -21,6 +21,10 @@ public class grid_explorer {
 	
 	public static void main(String[] args){
 		
+		//TODO - check for the block in front
+		//TODO - keep red floor coordinates
+		//TODO - implement the path finding algorithm
+		
 		RegulatedMotor leftMotor = Motor.B;
 		RegulatedMotor rightMotor = Motor.D;
 		EV3 ev3 = (EV3) BrickFinder.getLocal();
@@ -37,7 +41,7 @@ public class grid_explorer {
 		SampleProvider distanceMode = ir_sensor.getDistanceMode();
 		float value[] = new float[distanceMode.sampleSize()];
 		
-z
+
 //		for(int i = 0; i<6; i++){
 //			for (int j = 0; j<4; j++){
 //				map[i][j] = 0;
@@ -46,6 +50,7 @@ z
 		//if 1 -> visited, if 2-> red & visited, if 3->block
 		
 		
+		//hard coding for going through the map spirally
 		for(int i = 0; i < 5;i++){
 			one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
 		}
@@ -75,9 +80,12 @@ z
 		rightMotor.stop(true);
 		leftMotor.close();
 		rightMotor.close();
+		
+		return;
 	}
 
 	//moves forward 23cms(rough estimate) - commented the whole function in case we need it for later.
+	
 //	public static void one_forward(RegulatedMotor leftMotor, RegulatedMotor rightMotor){
 //		leftMotor.setSpeed(300);
 //		rightMotor.setSpeed(300);
@@ -120,9 +128,10 @@ z
 				
 				//if black, then stop, give 30ms delay - this was implemented from trial and error.
 				//from my thought, I expected the wheel to stop after the leftmotor.stop(true) is called
-				//however, it did not wait for the right wheel to stop. so we gave 30ms delay, which was enough
-				//for the amount of angular error we had for the track. 
-				//It'd be great if it can be improved to where it waits for another motor to stop.
+				//well it does stop; however, it did not wait for the right wheel to stop. 
+				//so we gave 30ms delay, which was enough for the amount of angular error we had for the track. 
+				//It'd be great if it can be improved to where it waits for another motor to stop
+				//instead of waiting for an arbitrary number of 30ms.
 				case Color.BLACK:
 					leftMotor.stop(true);
 					Delay.msDelay(30);
@@ -217,9 +226,7 @@ z
 	public static int search_map(int[][] map){
 		for(int i = 0; i < map.length; i++){
 			for(int j = 0; j < map[i].length; j++){
-				if(map[i][j] != 0){
-					return 0;
-				}
+				return map[i][j];
 			}
 		}
 		return 1;
