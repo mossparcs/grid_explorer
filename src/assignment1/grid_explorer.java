@@ -53,30 +53,36 @@ public class grid_explorer {
 		
 		
 		//hard coding for going through the map spirally
-		for(int i = 0; i < 5;i++){
-			one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
-		}
-		rotate_left(leftMotor,rightMotor);	
-		one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
-		one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
-		one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
-		rotate_left(leftMotor,rightMotor);
-		for(int i = 0; i < 5;i++){
-			one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
-		}
-		rotate_left(leftMotor,rightMotor);	
-		one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
-		one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
-		rotate_left(leftMotor,rightMotor);	
-		for(int i = 0; i < 4;i++){
-			one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
-		}
-		rotate_left(leftMotor,rightMotor);	
-		one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
-		rotate_left(leftMotor,rightMotor);	
-		for(int i = 0; i < 3;i++){
-			one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
-		}
+//		for(int i = 0; i < 5;i++){
+//			one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
+//		}
+//		rotate_left(leftMotor,rightMotor);	
+//		one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
+//		one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
+//		one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
+//		rotate_left(leftMotor,rightMotor);
+//		for(int i = 0; i < 5;i++){
+//			one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
+//		}
+//		rotate_left(leftMotor,rightMotor);	
+//		one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
+//		one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
+//		rotate_left(leftMotor,rightMotor);	
+//		for(int i = 0; i < 4;i++){
+//			one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
+//		}
+//		rotate_left(leftMotor,rightMotor);	
+//		one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
+//		rotate_left(leftMotor,rightMotor);	
+//		for(int i = 0; i < 3;i++){
+//			
+//			if(block_check(ir_sensor) < 30){
+//				Sound.beep();
+//			}
+//			else{
+//				one_forward(leftMotor,rightMotor,color_left, color_right,ir_sensor);
+//			}
+//		}
 		
 		leftMotor.stop(true);
 		rightMotor.stop(true);
@@ -109,10 +115,19 @@ public class grid_explorer {
 		int right_met = 0;
 		int left_met = 0;
 	
-		if(block_check(ir_sensor) < 20){
+		//see if there is a block in front
+		if(block_check(ir_sensor) < 30){
 			Sound.beep();
 			return;	
 		}
+		
+		//check if the color is red before it starts moving
+		int initial_cid = leftColor.getColorID();
+		if(initial_cid == Color.RED){
+			Sound.buzz();
+		}
+		
+		
 		//first, it just moves until the do/while condition is met
 		rightMotor.setSpeed(400);
 		leftMotor.setSpeed(400);
@@ -134,12 +149,7 @@ public class grid_explorer {
 			if(left_met == 0){
 				switch(left_cid){
 				
-				//if black, then stop, give 30ms delay - this was implemented from trial and error.
-				//from my thought, I expected the wheel to stop after the leftmotor.stop(true) is called
-				//well it does stop; however, it did not wait for the right wheel to stop. 
-				//so we gave 30ms delay, which was enough for the amount of angular error we had for the track. 
-				//It'd be great if it can be improved to where it waits for another motor to stop
-				//instead of waiting for an arbitrary number of 30ms.
+				//if black line is detected, then stop
 				case Color.BLACK:
 					leftMotor.stop(true);
 					Delay.msDelay(30);
@@ -150,7 +160,6 @@ public class grid_explorer {
 				case Color.WHITE:
 					str += "white";
 					break;
-				//TODO case for red will have to be improvised
 				default:
 					break;
 				}
@@ -188,10 +197,13 @@ public class grid_explorer {
 		try{
 			Thread.sleep(1125);
 		}catch(InterruptedException e){}
+		leftMotor.stop(true);
+		rightMotor.stop(true);
 	}
 	
 	
 	//function to rotate to the right side, 90 degrees
+	//TODO : have not been tested. need to test
 	public static void rotate_right(RegulatedMotor leftMotor, RegulatedMotor rightMotor){
 		leftMotor.setSpeed(200);
 		rightMotor.setSpeed(200);
@@ -204,7 +216,6 @@ public class grid_explorer {
 	}
 	
 	//function to rotate to the right side, 90 degrees
-	//TODO : have not been tested. need to test
 	public static void rotate_left(RegulatedMotor leftMotor, RegulatedMotor rightMotor){
 		leftMotor.setSpeed(200);
 		rightMotor.setSpeed(200);
